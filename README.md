@@ -121,7 +121,9 @@ We are actively closing the gap. The CLI now has:
 oh-my-models select
 ```
 
-This launches a guided, keyboard-friendly flow (powered by `@clack/prompts`) for choosing an agent and selecting a model. We will continue improving this so the CLI feels more capable for interactive use without becoming a heavy TUI.
+This launches a guided, keyboard-friendly flow (powered by `@clack/prompts`) for choosing an agent and selecting a model.
+
+Additionally, running `oh-my-models set` with no arguments now automatically launches the same interactive picker. This gives you a smooth experience whether you type the full command or just start with `set`.
 
 ## Using Inside OpenCode (Recommended)
 

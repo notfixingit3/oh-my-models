@@ -5,7 +5,9 @@ import { log, printError } from '../utils/logger'
 
 export function setCommand(agent: string, model: string): void {
   if (!agent || !model) {
-    printError('Both <agent> and <model> are required.', 'Example: oh-my-models set sisyphus anthropic/claude-opus-4-7')
+    // This path is now mostly for programmatic use.
+    // From the CLI, missing args fall back to the interactive picker.
+    printError('Both agent and model are required for direct usage.', 'Tip: Run "oh-my-models set" with no arguments for an interactive picker.')
     process.exitCode = 1
     return
   }

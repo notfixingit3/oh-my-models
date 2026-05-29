@@ -50,9 +50,16 @@ program
   .action((opts) => listCommand(opts))
 
 program
-  .command('set <agent> <model>')
-  .description('Set the model for a specific agent (creates config if needed)')
-  .action(setCommand)
+  .command('set [agent] [model]')
+  .description('Set the model for a specific agent. If no arguments are given, launches an interactive picker.')
+  .action((agent, model) => {
+    if (agent && model) {
+      setCommand(agent, model)
+    } else {
+      // No (or incomplete) arguments provided — drop into the nice interactive experience
+      runInteractiveSelect()
+    }
+  })
 
 program
   .command('set-all <model>')
@@ -89,7 +96,7 @@ program.action(() => {
   console.log(`  ${colors.primary('oh-my-models list')}            ${colors.dim('# View current agent models')}`)
   console.log(`  ${colors.primary('oh-my-models select')}          ${colors.dim('# Interactive agent + model picker')}`)
   console.log(`  ${colors.primary('oh-my-models use mixed')}       ${colors.dim('# Apply a smart preset')}`)
-  console.log(`  ${colors.primary('oh-my-models set <agent> <model>')} ${colors.dim('# Direct set')}`)
+  console.log(`  ${colors.primary('oh-my-models set [agent] [model]')} ${colors.dim('# Direct set, or interactive if no args')}`)
   console.log()
   console.log(colors.dim('For the richest experience (live model search + smart recs), use the plugin inside OpenCode.'))
   console.log(colors.dim('Run "oh-my-models --help" for all options.'))
