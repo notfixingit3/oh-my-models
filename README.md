@@ -37,23 +37,29 @@ oh-my-models set sisyphus anthropic/claude-opus-4-7
 - **Smart presets** — `use claude`, `use gpt`, `use mixed`, `use fast`, etc.
 - **JSONC native** — safely edits your `oh-my-openagent.jsonc` (or legacy `oh-my-opencode.jsonc`) while preserving comments
 - **Zero friction** — auto-discovers the nearest config walking up from your current directory
-- **Works everywhere** — standalone CLI (`bunx`) or installed as an OpenCode plugin
+- **CLI-first** — designed to be used from your terminal with `bunx oh-my-models` (works inside or outside OpenCode sessions)
 
-## Installation
+## Installation & Usage
 
-### As a CLI (recommended for daily use)
+### Primary Way: Use the CLI
+
+`oh-my-models` is first and foremost a **command-line tool**. This is the recommended and most useful way to use it today.
 
 ```bash
-# Run without installing
+# No install required
 bunx oh-my-models list
+bunx oh-my-models use mixed
+bunx oh-my-models set sisyphus anthropic/claude-opus-4-7
 
-# Or install globally
+# Or install it globally
 bun install -g oh-my-models
 ```
 
-### As an OpenCode Plugin
+You can run these commands from a regular terminal — whether OpenCode is running or not.
 
-Add it to your `opencode.json` (or `opencode.jsonc`):
+### Optional: Register as an OpenCode Plugin
+
+You can also add it to your `opencode.json` (or `opencode.jsonc`):
 
 ```json
 {
@@ -64,22 +70,40 @@ Add it to your `opencode.json` (or `opencode.jsonc`):
 }
 ```
 
-The CLI still works the same way (`bunx oh-my-models ...`) even when the plugin is registered.
+**Important clarification:**
+
+Adding `oh-my-models` as a plugin currently does **not** change how you use it. There are no special slash commands (`/models ...`) or LLM-callable tools yet. The CLI remains the way you interact with the tool.
+
+We still recommend listing it if you use oh-my-openagent, mainly for:
+- Discoverability in the ecosystem
+- Future-proofing (we plan to add deeper integration later)
+
+## CLI vs Plugin Integration
+
+| Aspect                        | CLI (`bunx oh-my-models`)          | Registered as Plugin                  |
+|-------------------------------|------------------------------------|---------------------------------------|
+| **How you use it**            | Run commands in terminal           | Same — still use the CLI              |
+| **Works inside OpenCode**     | Yes                                | Yes (CLI still works)                 |
+| **Slash commands**            | No                                 | No (not yet)                          |
+| **LLM can call tools**        | No                                 | No (not yet)                          |
+| **Recommended?**              | **Yes** (primary method)           | Optional                              |
+
+**Bottom line:** Treat `oh-my-models` as a terminal CLI tool. Listing it as a plugin is fine and harmless, but it doesn't unlock extra functionality right now.
 
 ## Quick Start
 
 ```bash
 # 1. See what you're currently running
-oh-my-models list
+bunx oh-my-models list
 
 # 2. Apply a great balanced setup in one shot
-oh-my-models use mixed
+bunx oh-my-models use mixed
 
 # 3. Or go all-in on Claude 4 Opus for the brain
-oh-my-models set sisyphus anthropic/claude-opus-4-7
+bunx oh-my-models set sisyphus anthropic/claude-opus-4-7
 
 # 4. Make everything fast and cheap for exploration
-oh-my-models set-all google/gemini-3-flash
+bunx oh-my-models set-all google/gemini-3-flash
 ```
 
 ## Commands
