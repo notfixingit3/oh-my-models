@@ -13,9 +13,9 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/oh-my-models"><img src="https://img.shields.io/npm/v/oh-my-models?style=flat-square&color=6366f1" alt="npm version"></a>
-  <a href="https://github.com/notfixingit3/oh-my-models/blob/main/LICENSE"><img src="https://img.shields.io/github/license/notfixingit3/oh-my-models?style=flat-square" alt="License: MIT"></a>
-  <a href="https://github.com/notfixingit3/oh-my-models/stargazers"><img src="https://img.shields.io/github/stars/notfixingit3/oh-my-models?style=flat-square" alt="GitHub Stars"></a>
-  <a href="https://github.com/notfixingit3/oh-my-models/issues"><img src="https://img.shields.io/github/issues/notfixingit3/oh-my-models?style=flat-square" alt="GitHub Issues"></a>
+  <a href="https://github.com/notfixingit3/oh-my-models/blob/main/LICENSE"><img src="https://img.shields.io/github/license/notfixingit3/oh-my-models?style=flat-square&logo=github" alt="License: MIT"></a>
+  <a href="https://github.com/notfixingit3/oh-my-models/stargazers"><img src="https://img.shields.io/github/stars/notfixingit3/oh-my-models?style=flat-square&logo=github" alt="GitHub Stars"></a>
+  <a href="https://github.com/notfixingit3/oh-my-models/issues"><img src="https://img.shields.io/github/issues/notfixingit3/oh-my-models?style=flat-square&logo=github" alt="GitHub Issues"></a>
   <a href="https://buymeacoffee.com/notfixingit"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=flat-square&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee"></a>
 </p>
 
