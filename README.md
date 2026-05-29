@@ -1,6 +1,25 @@
-# oh-my-models
+<p align="center">
+  <a href="https://github.com/notfixingit3/oh-my-models">
+    <img src="assets/logo.svg" width="118" height="118" alt="oh-my-models logo">
+  </a>
+</p>
 
-> A clean, lightweight companion plugin for [oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent) (omo) that makes it dead simple to view and bulk-set LLM models for all agents.
+<h1 align="center">oh-my-models</h1>
+
+<p align="center">
+  <strong>A clean, lightweight companion for oh-my-openagent.</strong><br>
+  View and bulk-set LLM models for all agents with one command.
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/oh-my-models"><img src="https://img.shields.io/npm/v/oh-my-models?style=flat-square&color=6366f1" alt="npm version"></a>
+  <a href="https://github.com/notfixingit3/oh-my-models/blob/main/LICENSE"><img src="https://img.shields.io/github/license/notfixingit3/oh-my-models?style=flat-square" alt="License: MIT"></a>
+  <a href="https://github.com/notfixingit3/oh-my-models/stargazers"><img src="https://img.shields.io/github/stars/notfixingit3/oh-my-models?style=flat-square" alt="GitHub Stars"></a>
+  <a href="https://github.com/notfixingit3/oh-my-models/issues"><img src="https://img.shields.io/github/issues/notfixingit3/oh-my-models?style=flat-square" alt="GitHub Issues"></a>
+  <a href="https://buymeacoffee.com/notfixingit"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=flat-square&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee"></a>
+</p>
+
+---
 
 One command to rule them all:
 
@@ -145,6 +164,18 @@ bun src/cli/index.ts list
 - **Delightful** — beautiful output, helpful errors, smart defaults
 - **Respectful** — never destroys your comments or formatting
 - **Composable** — plays perfectly alongside oh-my-openagent and other plugins
+
+## Support
+
+If you find `oh-my-models` useful in your daily workflow, consider supporting its development:
+
+<p align="center">
+  <a href="https://buymeacoffee.com/notfixingit">
+    <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" width="200">
+  </a>
+</p>
+
+Every coffee helps me ship more small, delightful tools like this one.
 
 ## License
 
