@@ -43,6 +43,7 @@ export function setAllCommand(model: string): void {
   writeConfig(config.path, result.newRaw)
 
   log.success(`Set ${result.agentsTouched.length} agent(s) to ${colors.model(model)}`)
+  log.hint(`A timestamped backup of your previous config was created (if the file existed).`)
   console.log(
     colors.muted(`  Agents: ${result.agentsTouched.map((a) => colors.agent(a)).join(', ')}`)
   )

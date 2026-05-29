@@ -237,6 +237,7 @@ elif [[ "$MODE" == "global" ]]; then
     BACKUP="$CONFIG_FILE.bak.$(date +%s)"
     cp "$CONFIG_FILE" "$BACKUP"
     success "Backup created: $BACKUP"
+    echo "   (Your previous OpenCode plugin configuration was preserved.)"
 
     # Check if already present
     if grep -q "oh-my-models" "$CONFIG_FILE"; then

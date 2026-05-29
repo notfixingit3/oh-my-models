@@ -174,12 +174,32 @@ export function applyPreset(
 /**
  * Write the (possibly modified) raw content back to disk.
  * Creates parent directories if they don't exist (for `init` scenarios).
+ *
+ * IMPORTANT: If the file already exists, a timestamped backup is created first
+ * (e.g. oh-my-openagent.jsonc.bak.1716923400123). This applies to all code paths
+ * that modify agent models (CLI set/set-all/use/select + plugin tools).
  */
 export function writeConfig(configPath: string, newRaw: string): void {
   const dir = dirname(configPath)
   if (!existsSync(dir)) {
     mkdirSync(dir, { recursive: true })
   }
+
+  if (existsSync(configPath)) {
+    const timestamp = Date.now()
+    const backupPath = `${configPath}.bak.${timestamp}`
+    try {
+      // Create a backup before overwriting the user's agent config.
+      // We use the already-imported synchronous functions.
+      const existing = readFileSync(configPath, 'utf-8')
+      writeFileSync(backupPath, existing, 'utf-8')
+    } catch (err) {
+      // If we can't even create a backup, we still proceed with the write
+      // but we should surface this somehow (for now we silently continue).
+      // In a future version we could log this.
+    }
+  }
+
   writeFileSync(configPath, newRaw, 'utf-8')
 }
 

@@ -46,4 +46,5 @@ export function setCommand(agent: string, model: string): void {
 
   log.success(`Set ${colors.agent(agent)} → ${colors.model(model)}`)
   log.hint(`Config updated: ${colors.dim(config.path)}`)
+  // writeConfig now creates a timestamped .bak file when overwriting an existing config
 }
