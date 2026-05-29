@@ -63,7 +63,9 @@ cd oh-my-models
 ./scripts/beta-setup.sh
 ```
 
-The script handles building and helps you register the local plugin (either project-only or globally).
+The script is designed to be both **idiot-proof for normal users** and **automation-friendly for sysadmins** (supports `--yes`, `--global`, `--dry-run`, environment variables, etc.).
+
+Run `./scripts/beta-setup.sh --help` to see all options.
 
 **Manual workflow (for developers):**
 

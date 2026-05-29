@@ -135,7 +135,7 @@ Since `oh-my-models` is not yet published to npm, here is the recommended way fo
 
 ### Quick Start for Testers
 
-The easiest way is to run the beta setup script:
+The easiest and most reliable way is to run the beta setup script:
 
 ```bash
 git clone https://github.com/notfixingit3/oh-my-models.git
@@ -143,10 +143,15 @@ cd oh-my-models
 ./scripts/beta-setup.sh
 ```
 
-The script will:
-- Install dependencies and build the plugin
-- Help you register it locally (either project-level or globally)
-- Give you the next steps
+The script supports both **casual users** and **sysadmins**:
+
+- Interactive mode (default) – very guided and safe
+- `--yes` for non-interactive / automated use
+- `--global` / `--project` flags
+- `--dry-run` support
+- Environment variable support for CI/automation
+
+See `./scripts/beta-setup.sh --help` for all options.
 
 You can also do it manually:
 
