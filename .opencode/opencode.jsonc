@@ -2,6 +2,6 @@
   "$schema": "https://opencode.ai/config.json",
   "plugin": [
     "oh-my-openagent@latest",
-    "file:///Users/house/Documents/gitlab/oh-my-models"
+    "file:///Users/house/Documents/gitlab/oh-my-models/dist/index.js"
   ]
 }

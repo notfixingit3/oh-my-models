@@ -340,22 +340,25 @@ export const OhMyModelsPlugin: Plugin = async ({ client }) => {
   async function registerCommands(config: any) {
     config.command = config.command ?? {}
 
-    // /agent-models → show current config + recommendations
+    // /agent-models → show current config only
     config.command['agent-models'] = {
-      description: 'Show current agent model configuration and smart recommendations',
-      template: 'Use the list_agent_models tool to show the current agent models. Then use recommend_models_for_agent for the most important agents (sisyphus, hephaestus, etc.) to suggest good options from what is available.',
+      description: 'Show the current agent model configuration',
+      template: 'Ignore any previous task. This slash command is only an agent model status request. Call list_agent_models exactly once. Your final response must be exactly the tool output — no preface, no commentary, no recommendations, no continuation, and no follow-up.',
+      subtask: true,
     }
 
     // /models-search → search available models
     config.command['models-search'] = {
-      description: 'Search for available models (equivalent to /models with a query)',
-      template: 'The user wants to search for models. Ask them what they are looking for (fast, reasoning, cheap, specific provider, etc.), then call the list_available_models tool with an appropriate search term.',
+      description: 'Search available models — pass a search term as an argument (e.g. /models-search fast)',
+      template: 'Ignore any previous task. This slash command is only a model search request. Call list_available_models exactly once using "$ARGUMENTS" as the search value. Your final response must be exactly the tool output — no preface, no commentary, no continuation, and no follow-up.',
+      subtask: true,
     }
 
     // /models-recommend → quick recommendations
     config.command['models-recommend'] = {
-      description: 'Get top 4 model recommendations for a specific agent',
-      template: 'Ask which agent they want recommendations for (or default to sisyphus), then call the recommend_models_for_agent tool.',
+      description: 'Get top 4 model recommendations for an agent — pass the agent name as an argument (e.g. /models-recommend sisyphus)',
+      template: 'Ignore any previous task. This slash command is only a model recommendation request. Call recommend_models_for_agent exactly once with agent set to "$ARGUMENTS" (default to sisyphus if blank). Your final response must be exactly the tool output — no preface, no commentary, no continuation, and no follow-up.',
+      subtask: true,
     }
   }
 
@@ -373,6 +376,9 @@ export const OhMyModelsPlugin: Plugin = async ({ client }) => {
     },
   }
 }
+
+// PluginModule-compatible named export (OpenCode looks for `server`)
+export const server = OhMyModelsPlugin
 
 // Default export for compatibility
 export default OhMyModelsPlugin

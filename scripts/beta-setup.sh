@@ -35,7 +35,8 @@ fi
 # ----------------------------- Defaults ---------------------------
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-PLUGIN_PATH="${OH_MY_MODELS_PATH:-$REPO_ROOT}"
+REPO_PATH="${OH_MY_MODELS_PATH:-$REPO_ROOT}"
+PLUGIN_ENTRY="$REPO_PATH/dist/index.js"
 
 MODE="${OH_MY_MODELS_MODE:-}"           # project | global | ""
 YES="${OH_MY_MODELS_YES:-0}"
@@ -116,7 +117,7 @@ while [[ $# -gt 0 ]]; do
         -y|--yes)          YES=1; shift ;;
         --global)          MODE="global"; shift ;;
         --project)         MODE="project"; shift ;;
-        --path)            PLUGIN_PATH="$2"; shift 2 ;;
+        --path)            REPO_PATH="$2"; PLUGIN_ENTRY="$2/dist/index.js"; shift 2 ;;
         --config)          CUSTOM_CONFIG="$2"; shift 2 ;;
         --dry-run)         DRY_RUN=1; shift ;;
         -h|--help)         usage; exit 0 ;;
@@ -125,12 +126,12 @@ while [[ $# -gt 0 ]]; do
 done
 
 # ----------------------------- Sanity Checks --------------------
-if [[ ! -d "$PLUGIN_PATH" ]]; then
-    die "Plugin path does not exist: $PLUGIN_PATH"
+if [[ ! -d "$REPO_PATH" ]]; then
+    die "Plugin path does not exist: $REPO_PATH"
 fi
 
-if [[ ! -f "$PLUGIN_PATH/package.json" ]]; then
-    die "This does not look like the oh-my-models repository: $PLUGIN_PATH"
+if [[ ! -f "$REPO_PATH/package.json" ]]; then
+    die "This does not look like the oh-my-models repository: $REPO_PATH"
 fi
 
 if ! command -v bun >/dev/null 2>&1; then
@@ -140,11 +141,15 @@ fi
 # ----------------------------- Build Step -----------------------
 print_header
 
-info "Building oh-my-models at: $PLUGIN_PATH"
+info "Building oh-my-models at: $REPO_PATH"
 
-cd "$PLUGIN_PATH"
+cd "$REPO_PATH"
 bun install
 bun run build
+
+if [[ ! -f "$PLUGIN_ENTRY" ]]; then
+    die "Build succeeded but expected output not found: $PLUGIN_ENTRY"
+fi
 
 success "Build complete."
 echo ""
@@ -177,7 +182,7 @@ fi
 
 # ----------------------------- Project Mode ---------------------
 if [[ "$MODE" == "project" ]]; then
-    CONFIG_DIR="$PLUGIN_PATH/.opencode"
+    CONFIG_DIR="$REPO_PATH/.opencode"
     CONFIG_FILE="$CONFIG_DIR/opencode.jsonc"
 
     if [[ "$DRY_RUN" == "1" ]]; then
@@ -203,7 +208,7 @@ if [[ "$MODE" == "project" ]]; then
   "\$schema": "https://opencode.ai/config.json",
   "plugin": [
     "oh-my-openagent@latest",
-    "file://$PLUGIN_PATH"
+    "file://$PLUGIN_ENTRY"
   ]
 }
 EOF
@@ -212,7 +217,7 @@ EOF
     echo "   $CONFIG_FILE"
     echo ""
     echo "This plugin will only be active when you open OpenCode inside:"
-    echo "   $PLUGIN_PATH"
+    echo "   $REPO_PATH"
 
 # ----------------------------- Global Mode ----------------------
 elif [[ "$MODE" == "global" ]]; then
@@ -230,7 +235,7 @@ elif [[ "$MODE" == "global" ]]; then
 
     if [[ "$DRY_RUN" == "1" ]]; then
         echo "[DRY RUN] Would modify: $CONFIG_FILE"
-        echo "[DRY RUN] Would add:    \"file://$PLUGIN_PATH\""
+        echo "[DRY RUN] Would add:    \"file://$PLUGIN_ENTRY\""
         exit 0
     fi
 
@@ -246,7 +251,7 @@ elif [[ "$MODE" == "global" ]]; then
         echo "   Current file: $CONFIG_FILE"
         echo ""
         echo "   You probably want this line instead:"
-        echo "   \"file://$PLUGIN_PATH\""
+        echo "   \"file://$PLUGIN_ENTRY\""
         echo ""
         if ! confirm "Append the local path anyway?" "N"; then
             echo "Aborted. Please edit the file manually if needed."
@@ -257,8 +262,8 @@ elif [[ "$MODE" == "global" ]]; then
     # Try to use jq if available (much safer for JSONC-ish files)
     if command -v jq >/dev/null 2>&1; then
         TEMP_FILE=$(mktemp)
-        if jq --arg path "file://$PLUGIN_PATH" '
-            .plugin = (.plugin // []) + [$path] | 
+        if jq --arg path "file://$PLUGIN_ENTRY" '
+            .plugin = (.plugin // []) + [$path] |
             .plugin |= unique
         ' "$CONFIG_FILE" > "$TEMP_FILE" 2>/dev/null; then
             mv "$TEMP_FILE" "$CONFIG_FILE"
@@ -269,7 +274,7 @@ elif [[ "$MODE" == "global" ]]; then
             echo ""
             echo "Please manually add this line inside your \"plugin\" array:"
             echo ""
-            echo "    \"file://$PLUGIN_PATH\""
+            echo "    \"file://$PLUGIN_ENTRY\""
             echo ""
             echo "File: $CONFIG_FILE"
             exit 0
@@ -280,7 +285,7 @@ elif [[ "$MODE" == "global" ]]; then
         TEMP_FILE=$(mktemp)
 
         if grep -q '"plugin"' "$CONFIG_FILE"; then
-            awk -v path="file://$PLUGIN_PATH" '
+            awk -v path="file://$PLUGIN_ENTRY" '
                 /"plugin"[ \t]*:[ \t]*\[/ {
                     print
                     print "    \"" path "\","
@@ -297,7 +302,7 @@ elif [[ "$MODE" == "global" ]]; then
             echo "Could not automatically edit your config."
             echo "Please manually add this inside the \"plugin\" array:"
             echo ""
-            echo "    \"file://$PLUGIN_PATH\""
+            echo "    \"file://$PLUGIN_ENTRY\""
             echo ""
             echo "File: $CONFIG_FILE"
             exit 0
