@@ -1,6 +1,6 @@
 {
   "name": "oh-my-models",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A clean, lightweight companion plugin for oh-my-openagent (omo) that makes it dead simple to view and bulk-set LLM models for all agents.",
   "author": "notfixingit3",
   "license": "MIT",

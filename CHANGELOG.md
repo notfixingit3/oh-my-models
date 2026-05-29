@@ -5,6 +5,21 @@ All notable changes to oh-my-models will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2026-05-29
+
+### Added
+
+- `list` / `status` CLI command now shows a **Categories** table alongside Agents, reading the `categories` section of your config
+- `list_agent_models` plugin tool now includes categories in its output
+- `--json` flag output now includes `categories` alongside `agents`
+- `getAllCategories` helper in `editor.ts` (mirrors `getAllAgents`)
+
+### Removed
+
+- `recommend_models_for_agent` plugin tool — scoring was pattern-matched against standard provider names and gave misleading results for non-standard provider setups
+- `apply_model_preset` plugin tool — presets use hardcoded model strings that may not match your connected providers; use the CLI `oh-my-models use <preset>` instead
+- `/models-recommend` slash command (backed by the removed tool)
+
 ## [0.1.1] - 2026-05-29
 
 ### Fixed
@@ -33,5 +48,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Colorful, friendly terminal output with helpful errors and suggestions
 - MIT license, clean TypeScript project (strict mode)
 
+[0.1.2]: https://github.com/notfixingit3/oh-my-models/releases/tag/v0.1.2
 [0.1.1]: https://github.com/notfixingit3/oh-my-models/releases/tag/v0.1.1
 [0.1.0]: https://github.com/notfixingit3/oh-my-models/releases/tag/v0.1.0

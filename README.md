@@ -44,7 +44,6 @@ Inside OpenCode, use slash commands instead:
 ```
 /agent-models
 /models-search fast
-/models-recommend sisyphus
 ```
 
 ---
@@ -56,7 +55,7 @@ Inside OpenCode, use slash commands instead:
 | Capability | CLI | Plugin (inside OpenCode) |
 |---|---|---|
 | View current agent models | `list` / `status` | `/agent-models` |
-| Apply presets | `use <preset>` | `apply_model_preset` tool |
+| Apply presets | `use <preset>` | — (use CLI) |
 | Set one agent | `set <agent> <model>` | `set_agent_model` tool |
 | Set all agents | `set-all <model>` | `set_agent_model` per agent |
 | Search live models | — | `/models-search <query>` |
@@ -91,9 +90,8 @@ Once the plugin is loaded in OpenCode, you get:
 
 | Command | What it does |
 |---|---|
-| `/agent-models` | Show current agent → model configuration |
+| `/agent-models` | Show current agent and category configuration |
 | `/models-search <query>` | Search models available from connected providers |
-| `/models-recommend <agent>` | Top 4 recommendations for an agent based on role + live availability |
 
 ### LLM Tools
 
@@ -101,11 +99,9 @@ The plugin also exposes these tools so you can ask the LLM naturally:
 
 | Tool | Purpose |
 |---|---|
-| `list_agent_models` | See current agent configuration |
+| `list_agent_models` | See current agent and category configuration |
 | `list_available_models` | Search/filter models from connected providers |
 | `set_agent_model` | Change one agent's model |
-| `apply_model_preset` | Apply a preset across all agents |
-| `recommend_models_for_agent` | Smart recommendations for a specific agent |
 
 You can talk to it naturally: *"Switch librarian to something fast"*, *"What's the best reasoning model I have connected right now?"*
 

@@ -53,11 +53,21 @@ export function getAgentModel(config: LoadedConfig, agentName: string): string |
  * Returns all agents currently defined in the config (both string and object forms).
  */
 export function getAllAgents(config: LoadedConfig): Record<string, string> {
-  const agents = config.data.agents as AgentsSection | undefined
-  if (!agents) return {}
+  return extractModels(config.data.agents as AgentsSection | undefined)
+}
+
+/**
+ * Returns all categories currently defined in the config.
+ */
+export function getAllCategories(config: LoadedConfig): Record<string, string> {
+  return extractModels(config.data.categories as AgentsSection | undefined)
+}
+
+function extractModels(section: AgentsSection | undefined): Record<string, string> {
+  if (!section) return {}
 
   const result: Record<string, string> = {}
-  for (const [name, entry] of Object.entries(agents)) {
+  for (const [name, entry] of Object.entries(section)) {
     if (typeof entry === 'string') {
       result[name] = entry
     } else if (entry && typeof entry === 'object' && (entry as AgentEntry).model) {
