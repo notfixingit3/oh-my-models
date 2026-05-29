@@ -14,6 +14,7 @@ import { setAllCommand } from '../commands/set-all'
 import { useCommand } from '../commands/use'
 import { presetsCommand } from '../commands/presets'
 import { initCommand } from '../commands/init'
+import { runInteractiveSelect } from './interactive'
 import { colors } from '../utils/colors'
 
 // Read version at runtime (Bun-native with safe fallback for typecheck)
@@ -73,6 +74,11 @@ program
   .description('Create a starter oh-my-openagent.jsonc in the current project')
   .action(initCommand)
 
+program
+  .command('select')
+  .description('Interactive mode: pick an agent and choose a model with nice prompts')
+  .action(() => runInteractiveSelect())
+
 // Helpful default when run with no args
 program.action(() => {
   console.log()
@@ -80,12 +86,13 @@ program.action(() => {
   console.log(colors.dim('Lightweight model management for oh-my-openagent'))
   console.log()
   console.log('Common commands:')
-  console.log(`  ${colors.primary('oh-my-models list')}           ${colors.dim('# View current agent models')}`)
-  console.log(`  ${colors.primary('oh-my-models use mixed')}      ${colors.dim('# Apply a smart preset')}`)
-  console.log(`  ${colors.primary('oh-my-models set-all <model>')} ${colors.dim('# Bulk update everything')}`)
-  console.log(`  ${colors.primary('oh-my-models presets')}        ${colors.dim('# See all preset options')}`)
+  console.log(`  ${colors.primary('oh-my-models list')}            ${colors.dim('# View current agent models')}`)
+  console.log(`  ${colors.primary('oh-my-models select')}          ${colors.dim('# Interactive agent + model picker')}`)
+  console.log(`  ${colors.primary('oh-my-models use mixed')}       ${colors.dim('# Apply a smart preset')}`)
+  console.log(`  ${colors.primary('oh-my-models set <agent> <model>')} ${colors.dim('# Direct set')}`)
   console.log()
-  console.log(colors.dim('Run "oh-my-models --help" for the full list.'))
+  console.log(colors.dim('For the richest experience (live model search + smart recs), use the plugin inside OpenCode.'))
+  console.log(colors.dim('Run "oh-my-models --help" for all options.'))
 })
 
 // Parse and run

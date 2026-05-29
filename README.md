@@ -70,29 +70,58 @@ You can also add it to your `opencode.json` (or `opencode.jsonc`):
 }
 ```
 
-**Important clarification:**
+**Current state (as of latest version):**
 
-Adding `oh-my-models` as a plugin currently does **not** change how you use it. There are no special slash commands (`/models ...`) or LLM-callable tools yet. The CLI remains the way you interact with the tool.
+The plugin now has significantly richer capabilities when used inside OpenCode (slash commands + LLM tools for discovery and smart recommendations). The CLI remains excellent for direct, scriptable control from the terminal.
 
-We still recommend listing it if you use oh-my-openagent, mainly for:
-- Discoverability in the ecosystem
-- Future-proofing (we plan to add deeper integration later)
+We still recommend adding it to your plugins list for the best overall experience.
 
-## CLI vs Plugin Integration
+## CLI vs Plugin Capabilities
 
-| Aspect                        | CLI (`bunx oh-my-models`)             | Registered as Plugin                                           |
-|-------------------------------|---------------------------------------|----------------------------------------------------------------|
-| **How you use it**            | Run commands in terminal              | Slash commands or talk to the LLM                              |
-| **Works inside OpenCode**     | Yes                                   | Yes                                                            |
-| **See agent models**          | `list` / `status`                     | `/agent-models` or `list_agent_models` tool                    |
-| **Discover models**           | Manual                                | `/models-search fast` or `list_available_models` (like `/models`) |
-| **Get smart recommendations** | Not available                         | `/models-recommend sisyphus` or `recommend_models_for_agent`   |
-| **Set models**                | `set` / `set-all` / `use <preset>`    | `set_agent_model` + `apply_model_preset` + natural language    |
-| **Best for**                  | Direct control from terminal          | In-flow model management while working                         |
+We believe both the CLI and the in-OpenCode experience should feel equally capable. Here's the current state and direction:
 
-**Bottom line:** 
-- Use the **CLI** when you want direct terminal control.
-- When the plugin is registered, you can talk to your agent in natural language ("switch the explorer to a fast cheap model", "what models do we have available right now?", "apply the mixed preset") and it will use the tools to inspect and update your agent configuration.
+| Capability                    | CLI (`bunx oh-my-models`)                          | Inside OpenCode (Plugin)                                      | Parity Goal |
+|-------------------------------|----------------------------------------------------|---------------------------------------------------------------|-------------|
+| See current agent models      | Excellent (`list` / `status`)                      | Excellent (`/agent-models` or tool)                           | ✓           |
+| Apply presets                 | Excellent (`use mixed`, etc.)                      | Excellent (tool + slash command)                              | ✓           |
+| Direct `set` commands         | Excellent                                          | Good (via tools)                                              | ✓           |
+| **Live model discovery**      | Limited (presets + common models)                  | Excellent (`/models-search`, `list_available_models`)         | Plugin wins |
+| **Smart recommendations**     | Basic (presets only)                               | Strong (`/models-recommend`, `recommend_models_for_agent`)    | In progress |
+| **Interactive selection**     | Basic (direct args only)                           | Natural (LLM helps you choose)                                | CLI needs work |
+
+### The Honest Gap
+
+The plugin currently has a big advantage in two areas because it can talk to the running OpenCode instance:
+
+- Real-time knowledge of which models are actually connected right now.
+- The LLM acting as an intelligent assistant for discovery and selection ("find me something good for sisyphus that's fast but still smart").
+
+The pure CLI is intentionally lightweight and doesn't have direct access to OpenCode's live provider state.
+
+### Making the CLI Better
+
+To close the gap without turning the CLI into a heavy TUI, we are planning to add **nice interactive prompts** (using `@clack/prompts`, the same library used by oh-my-openagent itself). This will enable flows like:
+
+- `oh-my-models select` — Interactive agent picker → model search & selection
+- Running `oh-my-models set` without arguments triggers a guided flow
+- Fuzzy searchable model lists when choosing
+
+This keeps the CLI feeling fast and delightful for direct use while giving it reasonable interactive superpowers when needed.
+
+**Current recommendation:**
+
+- Use the **plugin + slash commands / natural language** when you're already working inside OpenCode (currently the strongest experience, especially for discovery and recommendations).
+- Use the **CLI** for quick direct changes and scripting.
+
+### Improving CLI Interactivity
+
+We are actively closing the gap. The CLI now has:
+
+```bash
+oh-my-models select
+```
+
+This launches a guided, keyboard-friendly flow (powered by `@clack/prompts`) for choosing an agent and selecting a model. We will continue improving this so the CLI feels more capable for interactive use without becoming a heavy TUI.
 
 ## Using Inside OpenCode (Recommended)
 
