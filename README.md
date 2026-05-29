@@ -256,6 +256,16 @@ bun src/cli/index.ts list
 - **Respectful** — never destroys your comments or formatting
 - **Composable** — plays perfectly alongside oh-my-openagent and other plugins
 
+## Contributing
+
+We have one very important rule for contributions:
+
+**Every commit message must end with a Scooby-Doo quote.**
+
+This is our signature style.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guidelines and how to set up the commit template.
+
 ## Support
 
 If you find `oh-my-models` useful in your daily workflow, consider supporting its development:
