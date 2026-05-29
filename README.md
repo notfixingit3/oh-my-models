@@ -246,19 +246,24 @@ bun install
 bun run build
 bun run typecheck
 bun run lint
-
-# Run the CLI locally during development
-bun src/cli/index.ts list
 ```
+
+### Development Commands
+
+- `bun run dev` — Watch and rebuild the **plugin** on changes (recommended when testing inside OpenCode)
+- `bun run dev:plugin` — Same as above
+- `bun run dev:cli` — Watch the CLI entrypoint
+- `bun run build` — Full production build
 
 ### Testing the Plugin Inside OpenCode
 
 Since you have OpenCode installed locally, this is the best way to test the actual plugin behavior (tools + slash commands).
 
-1. **Build the plugin** (important after making changes):
+1. **Start the plugin watcher** (recommended):
    ```bash
-   bun run build
+   bun run dev
    ```
+   This will automatically rebuild `dist/index.js` whenever you change `src/index.ts`.
 
 2. **Point OpenCode at your local copy** by adding the absolute path in your config.
 
@@ -277,7 +282,8 @@ Since you have OpenCode installed locally, this is the best way to test the actu
    }
    ```
 
-3. Restart OpenCode (or at least start a new session).
+3. Restart OpenCode (or at least start a new session).  
+   **Note:** Even with the watcher, OpenCode usually needs a session restart to reload the plugin code.
 
 4. Once loaded, you can test:
 

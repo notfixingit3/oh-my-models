@@ -63,7 +63,14 @@ If you have OpenCode installed, you can test the plugin (tools + slash commands)
 }
 ```
 
-After changing the config, restart OpenCode and try commands like `/agent-models` or `/models-recommend`.
+**Recommended workflow:**
+
+1. Run `bun run dev` in one terminal (this watches and rebuilds the plugin on changes).
+2. Point OpenCode at the local path (as shown above).
+3. Restart your OpenCode session.
+4. Test with `/agent-models`, `/models-recommend`, or by talking to the LLM.
+
+**Note:** OpenCode usually requires restarting the session to pick up plugin changes, even when the files are being watched.
 
 See the Development section in the README for more details.
 

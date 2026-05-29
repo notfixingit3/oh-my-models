@@ -40,7 +40,9 @@
   ],
   "scripts": {
     "build": "bun run clean && bun build src/cli/index.ts --outdir dist/cli --target bun --format esm && bun build src/index.ts --outdir dist --target bun --format esm",
-    "dev": "bun --watch src/cli/index.ts",
+    "dev:cli": "bun --watch src/cli/index.ts",
+    "dev:plugin": "bun build src/index.ts --outdir dist --target bun --format esm --watch",
+    "dev": "bun run dev:plugin",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
