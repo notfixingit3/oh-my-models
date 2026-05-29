@@ -49,6 +49,6 @@ export function setCommand(agent: string, model: string): void {
 
   // Backups are created automatically by writeConfig
   const backupPath = `${config.path}.bak.*`
-  log.success(`${colors.yellow('Safety:')} A timestamped backup of your previous config was created.`)
+  log.success(`${colors.warning('Safety:')} A timestamped backup of your previous config was created.`)
   log.hint(`Look for files matching: ${colors.dim(backupPath)}`)
 }

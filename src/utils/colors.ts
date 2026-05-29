@@ -25,6 +25,8 @@ export const colors = {
   agent: pc.blue,
   // Preset names
   preset: pc.greenBright,
+  // Yellow for safety/warning labels
+  yellow: pc.yellow,
 }
 
 /**
