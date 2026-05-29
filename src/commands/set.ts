@@ -45,6 +45,10 @@ export function setCommand(agent: string, model: string): void {
   writeConfig(config.path, result.newRaw)
 
   log.success(`Set ${colors.agent(agent)} → ${colors.model(model)}`)
-  log.hint(`Config updated: ${colors.dim(config.path)}`)
-  // writeConfig now creates a timestamped .bak file when overwriting an existing config
+  log.success(`Config updated: ${colors.dim(config.path)}`)
+
+  // Backups are created automatically by writeConfig
+  const backupPath = `${config.path}.bak.*`
+  log.success(`${colors.yellow('Safety:')} A timestamped backup of your previous config was created.`)
+  log.hint(`Look for files matching: ${colors.dim(backupPath)}`)
 }

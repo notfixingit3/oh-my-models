@@ -162,7 +162,14 @@ export async function runInteractiveSelect() {
     if (result.changed) {
       writeConfig(config.path, result.newRaw)
       p.outro(`Done! ${pc.cyan(agentName)} is now using ${pc.magenta(chosenModel)}`)
-      p.note('A timestamped backup of your previous config was created (if the file existed).', 'Safety')
+
+      // Make the backup message very visible
+      const backupPattern = `${config.path}.bak.*`
+      p.note(
+        `A timestamped backup of your previous config was automatically created.\n` +
+        `You can find it with: ${pc.dim(backupPattern)}`,
+        pc.yellow('Safety Backup Created')
+      )
     } else {
       p.outro(`${pc.cyan(agentName)} was already set to that model.`)
     }

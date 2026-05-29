@@ -194,7 +194,8 @@ if [[ "$MODE" == "project" ]]; then
             exit 0
         fi
         cp "$CONFIG_FILE" "$CONFIG_FILE.bak.$(date +%s)"
-        success "Backup created."
+        success "Backup created: $CONFIG_FILE.bak.$(date +%s)"
+        echo "   (Your previous OpenCode configuration was preserved.)"
     fi
 
     cat > "$CONFIG_FILE" <<EOF
@@ -237,7 +238,7 @@ elif [[ "$MODE" == "global" ]]; then
     BACKUP="$CONFIG_FILE.bak.$(date +%s)"
     cp "$CONFIG_FILE" "$BACKUP"
     success "Backup created: $BACKUP"
-    echo "   (Your previous OpenCode plugin configuration was preserved.)"
+    echo "   (Your previous OpenCode configuration was preserved.)"
 
     # Check if already present
     if grep -q "oh-my-models" "$CONFIG_FILE"; then

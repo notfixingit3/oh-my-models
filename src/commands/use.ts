@@ -53,7 +53,8 @@ export function useCommand(presetName: string): void {
   writeConfig(config.path, result.newRaw)
 
   log.success(`Applied preset ${colors.bold(colors.preset(preset.name))}`)
-  log.hint(`A timestamped backup of your previous config was created (if the file existed).`)
+  log.success(`${colors.yellow('Safety:')} A timestamped backup of your previous config was created.`)
+  log.hint(`Look for files like: ${colors.dim(config.path + '.bak.*')}`)
   console.log(colors.dim(`  ${preset.description}`))
   log.blank()
 
