@@ -135,6 +135,21 @@ Since `oh-my-models` is not yet published to npm, here is the recommended way fo
 
 ### Quick Start for Testers
 
+The easiest way is to run the beta setup script:
+
+```bash
+git clone https://github.com/notfixingit3/oh-my-models.git
+cd oh-my-models
+./scripts/beta-setup.sh
+```
+
+The script will:
+- Install dependencies and build the plugin
+- Help you register it locally (either project-level or globally)
+- Give you the next steps
+
+You can also do it manually:
+
 1. Clone the repo:
    ```bash
    git clone https://github.com/notfixingit3/oh-my-models.git
@@ -154,11 +169,6 @@ Since `oh-my-models` is not yet published to npm, here is the recommended way fo
    }
    ```
 
-   **Example on macOS:**
-   ```jsonc
-   "file:///Users/yourname/Documents/gitlab/oh-my-models"
-   ```
-
 3. Restart OpenCode (or start a new session).
 
 4. Try the commands:
@@ -166,7 +176,10 @@ Since `oh-my-models` is not yet published to npm, here is the recommended way fo
    - `/models-search fast`
    - `/models-recommend sisyphus`
 
-You can keep it updated by running `git pull && bun run build` in the cloned folder.
+Keep it updated with:
+```bash
+git pull && bun run build
+```
 
 ### Keeping Your Global Config Clean
 
@@ -299,6 +312,11 @@ bun run lint
 - `bun run dev:plugin` — Same as above
 - `bun run dev:cli` — Watch the CLI entrypoint
 - `bun run build` — Full production build
+
+**For beta testers**, the easiest onboarding is:
+```bash
+./scripts/beta-setup.sh
+```
 
 ### Testing the Plugin Inside OpenCode
 

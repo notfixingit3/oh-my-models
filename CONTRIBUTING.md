@@ -53,9 +53,21 @@ Any classic Scooby-Doo quote is welcome. Some favorites:
 
 ## Beta Testing (for Friends & Early Testers)
 
-`oh-my-models` is not yet published to npm. The current way to test it is:
+`oh-my-models` is not yet published to npm.
 
-1. Clone the repo:
+**Easiest way:**
+
+```bash
+git clone https://github.com/notfixingit3/oh-my-models.git
+cd oh-my-models
+./scripts/beta-setup.sh
+```
+
+The script handles building and helps you register the local plugin (either project-only or globally).
+
+**Manual workflow (for developers):**
+
+1. Clone + build:
    ```bash
    git clone https://github.com/notfixingit3/oh-my-models.git
    cd oh-my-models
@@ -63,25 +75,11 @@ Any classic Scooby-Doo quote is welcome. Some favorites:
    bun run build
    ```
 
-2. Add it to your `opencode.jsonc` using a `file://` path:
+2. Add a `file://` path to your `opencode.jsonc`.
 
-   ```jsonc
-   {
-     "plugin": [
-       "oh-my-openagent@latest",
-       "file:///absolute/path/to/the/cloned/oh-my-models"
-     ]
-   }
-   ```
+3. Run `bun run dev` while testing.
 
-**Recommended workflow for development:**
-
-1. Run `bun run dev` in one terminal.
-2. Point OpenCode at the local path.
-3. Restart your OpenCode session.
-4. Test with `/agent-models`, `/models-recommend`, etc.
-
-See the **Beta Testing** section in the README for the full current instructions.
+See the **Beta Testing** section in the README for full details and examples.
 
 **Note:** OpenCode usually requires restarting the session to pick up plugin changes.
 
