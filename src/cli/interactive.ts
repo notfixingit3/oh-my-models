@@ -1,8 +1,8 @@
 import * as p from '@clack/prompts'
 import pc from 'picocolors'
-import { getAllAgents, loadConfig, setAgentModel, writeConfig } from '../config/editor'
-import { findNearestConfig } from '../config/finder'
-import { PRESETS, getPreset, listPresets } from '../presets'
+import { loadConfig, setAgentModel, writeConfig, createInitialConfig, getAllAgents } from '../config/editor'
+import { findNearestConfig, getDefaultProjectConfigPath } from '../config/finder'
+import { getPreset, listPresets } from '../presets'
 import { KNOWN_AGENTS } from '../presets'
 
 /**
@@ -129,7 +129,7 @@ export async function runInteractiveSelect() {
       message: 'Enter the full model string',
       placeholder: 'anthropic/claude-sonnet-4-6',
       validate: (value) => {
-        if (!value.includes('/')) return 'Model should usually be in provider/model format'
+        if (!value || !value.includes('/')) return 'Model should usually be in provider/model format'
       },
     })
     if (p.isCancel(manual)) {
@@ -155,19 +155,10 @@ export async function runInteractiveSelect() {
   }
 
   // Apply the change
-  let configPath = found?.path
-  let config = found ? loadConfig(found) : null
-
-  if (!config) {
-    // Create a basic config if none exists
-    const targetPath = found?.path || `${process.cwd()}/.opencode/oh-my-openagent.jsonc`
-    // For simplicity in interactive mode, we'll use a minimal creation
-    // In real code we would call createInitialConfig, but keeping it simple here
-    p.note('Creating new config file...', 'Info')
-  }
-
-  if (config) {
+  if (found) {
+    const config = loadConfig(found)
     const result = setAgentModel(config, agentName, chosenModel)
+
     if (result.changed) {
       writeConfig(config.path, result.newRaw)
       p.outro(`Done! ${pc.cyan(agentName)} is now using ${pc.magenta(chosenModel)}`)
@@ -175,6 +166,16 @@ export async function runInteractiveSelect() {
       p.outro(`${pc.cyan(agentName)} was already set to that model.`)
     }
   } else {
-    p.outro(`Selected ${pc.cyan(agentName)} → ${pc.magenta(chosenModel)}. Run the command again after creating a config.`)
+    // No existing config — create one with the chosen model
+    const target = getDefaultProjectConfigPath()
+    createInitialConfig(target)
+    p.note(`Created new config at ${target}`, 'Info')
+
+    // Re-load and set
+    const newConfig = loadConfig({ path: target, basename: 'oh-my-openagent.jsonc', isLegacy: false, isProject: true } as any)
+    const result = setAgentModel(newConfig, agentName, chosenModel)
+    writeConfig(target, result.newRaw)
+
+    p.outro(`Done! ${pc.cyan(agentName)} is now using ${pc.magenta(chosenModel)} (new config created)`)
   }
 }

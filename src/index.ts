@@ -14,24 +14,28 @@ import { tool } from '@opencode-ai/plugin'
 
 import { findNearestConfig } from './config/finder'
 import { loadConfig, getAllAgents, setAgentModel, writeConfig, applyPreset } from './config/editor'
-import { PRESETS, getPreset, KNOWN_AGENTS } from './presets'
+import { PRESETS, getPreset } from './presets'
 
 export const OhMyModelsPlugin: Plugin = async ({ client }) => {
   // Helper to fetch and normalize available models from OpenCode
   async function fetchAvailableModels(search?: string, provider?: string) {
     try {
-      const providersResponse = await client.config.providers()
-      const providers = providersResponse.providers ?? []
+      const result = await client.config.providers()
+
+      // The SDK returns a result object that may have data or be the response directly.
+      // We handle both the common shapes defensively.
+      const responseData = (result as any)?.data ?? result
+      const providers = responseData?.providers ?? []
 
       let allModels: Array<{ provider: string; id: string; name: string }> = []
 
       for (const prov of providers) {
-        if (!prov.models) continue
+        if (!prov?.models) continue
         for (const [modelId, modelInfo] of Object.entries(prov.models)) {
           allModels.push({
             provider: prov.id,
             id: `${prov.id}/${modelId}`,
-            name: (modelInfo as any).name || modelId,
+            name: (modelInfo as any)?.name || modelId,
           })
         }
       }
@@ -98,9 +102,10 @@ export const OhMyModelsPlugin: Plugin = async ({ client }) => {
     async execute(args) {
       try {
         // This is the key call that gives us what /models uses
-        const providersResponse = await client.config.providers()
+        const result = await client.config.providers()
 
-        const providers = providersResponse.providers ?? []
+        const responseData = (result as any)?.data ?? result
+        const providers = responseData?.providers ?? []
 
         if (providers.length === 0) {
           return 'No providers are currently connected in this OpenCode session.'
@@ -109,13 +114,13 @@ export const OhMyModelsPlugin: Plugin = async ({ client }) => {
         let allModels: Array<{ provider: string; id: string; name: string }> = []
 
         for (const provider of providers) {
-          if (!provider.models) continue
+          if (!provider?.models) continue
 
           for (const [modelId, modelInfo] of Object.entries(provider.models)) {
             allModels.push({
               provider: provider.id,
               id: `${provider.id}/${modelId}`,
-              name: modelInfo.name || modelId,
+              name: (modelInfo as any)?.name || modelId,
             })
           }
         }
@@ -283,7 +288,6 @@ export const OhMyModelsPlugin: Plugin = async ({ client }) => {
       // Simple scoring based on common knowledge + name matching
       const scored = available.map(m => {
         const id = m.id.toLowerCase()
-        const name = m.name.toLowerCase()
         let score = 0
 
         // Strong reasoning models
