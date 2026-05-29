@@ -1,0 +1,73 @@
+{
+  "name": "oh-my-models",
+  "version": "0.1.0",
+  "description": "A clean, lightweight companion plugin for oh-my-openagent (omo) that makes it dead simple to view and bulk-set LLM models for all agents.",
+  "author": "notfixingit3",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/notfixingit3/oh-my-models.git"
+  },
+  "bugs": {
+    "url": "https://github.com/notfixingit3/oh-my-models/issues"
+  },
+  "homepage": "https://github.com/notfixingit3/oh-my-models#readme",
+  "keywords": [
+    "opencode",
+    "oh-my-openagent",
+    "oh-my-opencode",
+    "omo",
+    "plugin",
+    "models",
+    "llm",
+    "ai",
+    "agents"
+  ],
+  "bin": {
+    "oh-my-models": "bin/oh-my-models.js"
+  },
+  "exports": {
+    ".": {
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "bun run clean && bun build src/cli/index.ts --outdir dist/cli --target bun --format esm && bun build src/index.ts --outdir dist --target bun --format esm",
+    "dev": "bun --watch src/cli/index.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{ts,js,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,js,json,md}\"",
+    "test": "bun test",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "bun run clean && bun run build && bun run typecheck"
+  },
+  "dependencies": {
+    "@opencode-ai/plugin": "^1.0.85",
+    "commander": "^14.0.0",
+    "jsonc-parser": "^3.3.1",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/bun": "latest",
+    "@types/node": "^22.0.0",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.5.0",
+    "typescript": "^5.8.0",
+    "typescript-eslint": "^8.47.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}
