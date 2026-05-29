@@ -70,6 +70,8 @@ You can also add it to your `opencode.json` (or `opencode.jsonc`):
 }
 ```
 
+**For local development / testing**, use an absolute path instead of the package name (see the [Development](#development) section for details).
+
 **Current state (as of latest version):**
 
 The plugin now has significantly richer capabilities when used inside OpenCode (slash commands + LLM tools for discovery and smart recommendations). The CLI remains excellent for direct, scriptable control from the terminal.
@@ -248,6 +250,48 @@ bun run lint
 # Run the CLI locally during development
 bun src/cli/index.ts list
 ```
+
+### Testing the Plugin Inside OpenCode
+
+Since you have OpenCode installed locally, this is the best way to test the actual plugin behavior (tools + slash commands).
+
+1. **Build the plugin** (important after making changes):
+   ```bash
+   bun run build
+   ```
+
+2. **Point OpenCode at your local copy** by adding the absolute path in your config.
+
+   You can do this in either:
+   - Global config: `~/.config/opencode/opencode.jsonc`
+   - Or (recommended for testing) a project-level config: `.opencode/opencode.jsonc` inside a test project
+
+   Example:
+
+   ```jsonc
+   {
+     "plugin": [
+       "oh-my-openagent@latest",
+       "/Users/yourname/path/to/oh-my-models"   // ← local path
+     ]
+   }
+   ```
+
+3. Restart OpenCode (or at least start a new session).
+
+4. Once loaded, you can test:
+
+   - Slash commands:
+     - `/agent-models`
+     - `/models-search fast`
+     - `/models-recommend sisyphus`
+
+   - Or just talk to the LLM naturally:
+     - "What models are my agents currently using?"
+     - "Show me some fast models that are available right now"
+     - "Recommend good models for the librarian agent"
+
+This setup lets you iterate quickly on the plugin tools while using the real OpenCode client (for `list_available_models`, etc.).
 
 ## Philosophy
 

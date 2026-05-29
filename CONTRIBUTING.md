@@ -51,6 +51,22 @@ Any classic Scooby-Doo quote is welcome. Some favorites:
 - Use clear, descriptive commit messages (with the Scooby-Doo quote at the end).
 - Feel free to open issues or discussions for bigger changes.
 
+## Testing the Plugin Locally
+
+If you have OpenCode installed, you can test the plugin (tools + slash commands) by pointing your `opencode.jsonc` at your local checkout:
+
+```jsonc
+{
+  "plugin": [
+    "/absolute/path/to/your/oh-my-models"
+  ]
+}
+```
+
+After changing the config, restart OpenCode and try commands like `/agent-models` or `/models-recommend`.
+
+See the Development section in the README for more details.
+
 Thanks for helping keep the mystery alive! 🐾
 
 Scooby-Dooby-Doo!
