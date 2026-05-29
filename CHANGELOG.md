@@ -5,6 +5,18 @@ All notable changes to oh-my-models will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-05-29
+
+### Fixed
+
+- Plugin registration now points to `dist/index.js` instead of the repo root directory — OpenCode requires a file path, not a directory
+- Added `server` named export to the plugin module so OpenCode correctly recognises it as a `PluginModule`
+- Config finder now discovers global config files stored directly in `~/.config/opencode/` and `~/.opencode/` (previously only searched `.opencode/` subdirectories walking up from cwd)
+- Config finder now matches `.json` extension in addition to `.jsonc` (oh-my-openagent writes `.json` in some environments)
+- `/agent-models`, `/models-search`, and `/models-recommend` slash commands now run as subtasks, preventing the executing agent from resuming a previous task after the command completes
+- Slash command templates tightened to avoid double tool calls and internal reasoning leaking into responses
+- `beta-setup.sh` updated to write the correct `dist/index.js` path and validate the build output exists
+
 ## [0.1.0] - 2026-04
 
 ### Added
@@ -21,4 +33,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Colorful, friendly terminal output with helpful errors and suggestions
 - MIT license, clean TypeScript project (strict mode)
 
+[0.1.1]: https://github.com/notfixingit3/oh-my-models/releases/tag/v0.1.1
 [0.1.0]: https://github.com/notfixingit3/oh-my-models/releases/tag/v0.1.0

@@ -11,7 +11,7 @@
   View and bulk-set LLM models for all agents with one command.
 </p>
 
-> **Status:** This project is currently in **private beta**. It is not yet published to npm. See the [Beta Testing](#beta-testing) section below for how to try it.
+> **Status:** Private beta — not yet published to npm. See [Beta Testing](#beta-testing) for setup.
 
 <p align="center">
   <a href="https://www.npmjs.com/package/oh-my-models"><img src="https://img.shields.io/npm/v/oh-my-models?style=flat-square&color=6366f1" alt="npm version"></a>
@@ -23,119 +23,133 @@
 
 ---
 
-One command to rule them all:
+## Quick Start
 
 ```bash
+# See what every agent is currently running
 oh-my-models list
+
+# Apply a sensible preset in one shot
 oh-my-models use mixed
+
+# Set one agent directly
 oh-my-models set sisyphus anthropic/claude-opus-4-7
-```
 
-## Features
-
-- **Beautiful status** — `list` / `status` shows every agent + its current model in a gorgeous table
-- **Bulk updates** — `set-all` changes every agent at once
-- **Per-agent control** — `set <agent> <model>`
-- **Smart presets** — `use claude`, `use gpt`, `use mixed`, `use fast`, etc.
-- **JSONC native** — safely edits your `oh-my-openagent.jsonc` (or legacy `oh-my-opencode.jsonc`) while preserving comments
-- **Zero friction** — auto-discovers the nearest config walking up from your current directory
-- **CLI-first** — designed to be used from your terminal with `bunx oh-my-models` (works inside or outside OpenCode sessions)
-
-## Installation & Usage
-
-> **Note:** `oh-my-models` is currently in private beta and **not yet published to npm**. Use the beta testing instructions below.
-
-### For Beta Testers (Recommended Right Now)
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/notfixingit3/oh-my-models.git
-   cd oh-my-models
-   bun install
-   bun run build
-   ```
-
-2. Load it locally in your `opencode.jsonc` using a `file://` path (see the [Beta Testing](#beta-testing) section below for exact examples).
-
-Once we publish to npm, the normal `bunx` / global install flow will become the primary method.
-
-### Optional: Register as an OpenCode Plugin (Public Release)
-
-After we publish, you will be able to add it like this:
-
-```json
-{
-  "plugin": [
-    "oh-my-openagent@latest",
-    "oh-my-models@latest"
-  ]
-}
-```
-
-**During beta**, always use an absolute `file://` path instead (see below).
-
-**Current state (as of latest version):**
-
-The plugin now has significantly richer capabilities when used inside OpenCode (slash commands + LLM tools for discovery and smart recommendations). The CLI remains excellent for direct, scriptable control from the terminal.
-
-We still recommend adding it to your plugins list for the best overall experience.
-
-## CLI vs Plugin Capabilities
-
-We believe both the CLI and the in-OpenCode experience should feel equally capable. Here's the current state and direction:
-
-| Capability                    | CLI (`bunx oh-my-models`)                          | Inside OpenCode (Plugin)                                      | Parity Goal |
-|-------------------------------|----------------------------------------------------|---------------------------------------------------------------|-------------|
-| See current agent models      | Excellent (`list` / `status`)                      | Excellent (`/agent-models` or tool)                           | ✓           |
-| Apply presets                 | Excellent (`use mixed`, etc.)                      | Excellent (tool + slash command)                              | ✓           |
-| Direct `set` commands         | Excellent                                          | Good (via tools)                                              | ✓           |
-| **Live model discovery**      | Limited (presets + common models)                  | Excellent (`/models-search`, `list_available_models`)         | Plugin wins |
-| **Smart recommendations**     | Basic (presets only)                               | Strong (`/models-recommend`, `recommend_models_for_agent`)    | In progress |
-| **Interactive selection**     | Basic (direct args only)                           | Natural (LLM helps you choose)                                | CLI needs work |
-
-### The Honest Gap
-
-The plugin currently has a big advantage in two areas because it can talk to the running OpenCode instance:
-
-- Real-time knowledge of which models are actually connected right now.
-- The LLM acting as an intelligent assistant for discovery and selection ("find me something good for sisyphus that's fast but still smart").
-
-The pure CLI is intentionally lightweight and doesn't have direct access to OpenCode's live provider state.
-
-### Making the CLI Better
-
-To close the gap without turning the CLI into a heavy TUI, we are planning to add **nice interactive prompts** (using `@clack/prompts`, the same library used by oh-my-openagent itself). This will enable flows like:
-
-- `oh-my-models select` — Interactive agent picker → model search & selection
-- Running `oh-my-models set` without arguments triggers a guided flow
-- Fuzzy searchable model lists when choosing
-
-This keeps the CLI feeling fast and delightful for direct use while giving it reasonable interactive superpowers when needed.
-
-**Current recommendation:**
-
-- Use the **plugin + slash commands / natural language** when you're already working inside OpenCode (currently the strongest experience, especially for discovery and recommendations).
-- Use the **CLI** for quick direct changes and scripting.
-
-### Improving CLI Interactivity
-
-We are actively closing the gap. The CLI now has:
-
-```bash
+# Or let it guide you interactively
 oh-my-models select
 ```
 
-This launches a guided, keyboard-friendly flow (powered by `@clack/prompts`) for choosing an agent and selecting a model.
+Inside OpenCode, use slash commands instead:
 
-Additionally, running `oh-my-models set` with no arguments now automatically launches the same interactive picker. This gives you a smooth experience whether you type the full command or just start with `set`.
+```
+/agent-models
+/models-search fast
+/models-recommend sisyphus
+```
 
-## Beta Testing (Current Status)
+---
 
-Since `oh-my-models` is not yet published to npm, here is the recommended way for you and your friends to test it:
+## Two Ways to Use It
 
-### Quick Start for Testers
+`oh-my-models` works as a **CLI tool** from your terminal and as an **OpenCode plugin** from inside a session. Both are first-class.
 
-The easiest and most reliable way is to run the beta setup script:
+| Capability | CLI | Plugin (inside OpenCode) |
+|---|---|---|
+| View current agent models | `list` / `status` | `/agent-models` |
+| Apply presets | `use <preset>` | `apply_model_preset` tool |
+| Set one agent | `set <agent> <model>` | `set_agent_model` tool |
+| Set all agents | `set-all <model>` | `set_agent_model` per agent |
+| Search live models | — | `/models-search <query>` |
+| Smart recommendations | — | `/models-recommend <agent>` |
+| Natural language control | — | Just ask the LLM |
+
+The plugin wins on discovery — it can see the models your providers actually have connected right now. The CLI wins for scripting and quick direct changes.
+
+---
+
+## CLI Commands
+
+| Command | Description |
+|---|---|
+| `list`, `status` | Table of all agents and their current models |
+| `set <agent> <model>` | Set the model for one agent |
+| `set-all <model>` | Set the same model for every agent |
+| `use <preset>` | Apply a smart preset (see below) |
+| `select` | Interactive picker — choose agent then model |
+| `presets` | List all presets with descriptions |
+| `init` | Create a starter `oh-my-openagent.jsonc` |
+
+Running `set` with no arguments launches the same interactive picker as `select`.
+
+---
+
+## Plugin: Slash Commands & Tools
+
+Once the plugin is loaded in OpenCode, you get:
+
+### Slash Commands
+
+| Command | What it does |
+|---|---|
+| `/agent-models` | Show current agent → model configuration |
+| `/models-search <query>` | Search models available from connected providers |
+| `/models-recommend <agent>` | Top 4 recommendations for an agent based on role + live availability |
+
+### LLM Tools
+
+The plugin also exposes these tools so you can ask the LLM naturally:
+
+| Tool | Purpose |
+|---|---|
+| `list_agent_models` | See current agent configuration |
+| `list_available_models` | Search/filter models from connected providers |
+| `set_agent_model` | Change one agent's model |
+| `apply_model_preset` | Apply a preset across all agents |
+| `recommend_models_for_agent` | Smart recommendations for a specific agent |
+
+You can talk to it naturally: *"Switch librarian to something fast"*, *"What's the best reasoning model I have connected right now?"*
+
+---
+
+## Presets
+
+| Preset | Best For | Strategy |
+|---|---|---|
+| `claude` | Maximum reasoning quality | Opus for sisyphus/oracle, Sonnet elsewhere |
+| `gpt` | OpenAI-centric setups | GPT-5.5 / GPT-5 family |
+| `gemini` | Price/performance & long context | Gemini 3 Pro + Flash |
+| `mixed` | **Recommended daily driver** | Best brains where it matters, fast models for research |
+| `fast` | Rapid iteration & exploration | Cheapest capable models everywhere |
+| `balanced` | Good quality without high spend | Sonnet + Flash mix |
+
+Friendly aliases work too: `opus`, `sonnet`, `gpt5`, `mix`, `cheap`, `speed`, `quick`.
+
+---
+
+## Config Discovery
+
+`oh-my-models` finds your config automatically — you never need to pass a path.
+
+**Search order:**
+
+1. Walk upward from the current directory, checking `.opencode/` at each level for:
+   - `oh-my-openagent.jsonc` (preferred)
+   - `oh-my-openagent.json`
+   - `oh-my-opencode.jsonc` (legacy)
+   - `oh-my-opencode.json` (legacy)
+2. If nothing is found in the project tree, check global config locations:
+   - `~/.config/opencode/` (XDG standard, where OpenCode stores its config)
+   - `~/.opencode/`
+
+The first match wins. If no config is found at all, most commands offer to create a starter one for you.
+
+---
+
+## Beta Testing
+
+`oh-my-models` is not yet published to npm. Here's how to install it locally.
+
+### Option A — Setup Script (recommended)
 
 ```bash
 git clone https://github.com/notfixingit3/oh-my-models.git
@@ -143,229 +157,85 @@ cd oh-my-models
 ./scripts/beta-setup.sh
 ```
 
-The script supports both **casual users** and **sysadmins**:
+The script builds the project, asks whether you want a project-level or global install, writes the right config, and creates a backup of anything it touches.
 
-- Interactive mode (default) – very guided and safe
-- `--yes` for non-interactive / automated use
-- `--global` / `--project` flags
-- `--dry-run` support
-- Environment variable support for CI/automation
+```
+./scripts/beta-setup.sh --yes           # non-interactive, project-level
+./scripts/beta-setup.sh --yes --global  # non-interactive, global
+./scripts/beta-setup.sh --help          # all options
+```
 
-See `./scripts/beta-setup.sh --help` for all options.
+### Option B — Manual
 
-You can also do it manually:
-
-1. Clone the repo:
+1. Clone and build:
    ```bash
    git clone https://github.com/notfixingit3/oh-my-models.git
    cd oh-my-models
-   bun install
-   bun run build
+   bun install && bun run build
    ```
 
-2. Add the local path to your `opencode.jsonc` (global or project-level):
-
+2. Add the plugin to your `opencode.jsonc` (global at `~/.config/opencode/opencode.jsonc`, or project-level at `.opencode/opencode.jsonc`):
    ```jsonc
    {
      "plugin": [
        "oh-my-openagent@latest",
-       "file:///absolute/path/to/the/cloned/oh-my-models"
+       "file:///absolute/path/to/oh-my-models/dist/index.js"
      ]
    }
    ```
 
-3. Restart OpenCode (or start a new session).
+3. Fully quit and restart OpenCode.
 
-4. Try the commands:
-   - `/agent-models`
-   - `/models-search fast`
-   - `/models-recommend sisyphus`
+4. Try `/agent-models` — you should see your current config.
 
-Keep it updated with:
+### Keeping Up to Date
+
 ```bash
 git pull && bun run build
 ```
 
-### Keeping Your Global Config Clean
+Then restart OpenCode to pick up the new build.
 
-For testing, many people prefer creating a project-level `.opencode/opencode.jsonc` inside a folder instead of modifying their global config.
+---
 
-## Using Inside OpenCode (Recommended)
+## Example Config
 
-Once you add `oh-my-models` to your `opencode.json` plugins, you get powerful model management **directly in your conversation**:
-
-### What you can ask the LLM
-
-- "Show me what all the agents are currently using"
-- "What fast models do we have available right now?"
-- "Switch the librarian to a cheap fast model"
-- "Apply the mixed preset across all agents"
-- "Set sisyphus to the best reasoning model we have connected"
-
-The plugin exposes these tools to the LLM:
-
-| Tool                         | Purpose                                                              |
-|------------------------------|----------------------------------------------------------------------|
-| `list_agent_models`          | See current agent → model configuration                              |
-| `list_available_models`      | Search/discover models from connected providers (like `/models`)     |
-| `set_agent_model`            | Change the model for one specific agent                              |
-| `apply_model_preset`         | Apply claude / mixed / fast / balanced etc. in one go                |
-| `recommend_models_for_agent` | Get the top 4 recommended models for an agent based on role + live availability |
-
-### Slash Commands
-
-You can also use these convenient slash commands directly:
-
-- `/agent-models` — Show current agent configuration + smart recommendations
-- `/models-search <query>` — Search available models (e.g. `/models-search fast` or `/models-search opus`)
-- `/models-recommend [agent]` — Get top 4 recommendations for an agent (defaults to sisyphus if not specified)
-
-This is significantly more powerful than the CLI when you're deep in a session, because the LLM can help you choose good models based on the actual providers you have connected.
-
-## Quick Start
-
-```bash
-# 1. See what you're currently running
-bunx oh-my-models list
-
-# 2. Apply a great balanced setup in one shot
-bunx oh-my-models use mixed
-
-# 3. Or go all-in on Claude 4 Opus for the brain
-bunx oh-my-models set sisyphus anthropic/claude-opus-4-7
-
-# 4. Make everything fast and cheap for exploration
-bunx oh-my-models set-all google/gemini-3-flash
-```
-
-## Commands
-
-| Command                        | Description                                      |
-|--------------------------------|--------------------------------------------------|
-| `list`, `status`               | Beautiful table of all agents and their models   |
-| `set <agent> <model>`          | Set model for one specific agent                 |
-| `set-all <model>`              | Set the exact same model for every agent         |
-| `use <preset>`                 | Apply a smart preset (see below)                 |
-| `presets`                      | Show all available presets with descriptions     |
-| `init`                         | Create a starter `oh-my-openagent.jsonc`         |
-| `--help`                       | Full usage information                           |
-
-## Presets
-
-| Preset   | Best For                              | Key Characteristics                     |
-|----------|---------------------------------------|-----------------------------------------|
-| `claude` | Maximum reasoning quality             | Opus for sisyphus/oracle, Sonnet elsewhere |
-| `gpt`    | OpenAI-centric teams                  | GPT-5.5 / GPT-5 family                  |
-| `gemini` | Price/performance & long context      | Gemini 3 Pro + Flash                    |
-| `mixed`  | **Recommended daily driver**          | Expensive brains where it matters, fast models for research |
-| `fast`   | Rapid iteration & exploration         | Cheapest capable models everywhere      |
-| `balanced` | Good quality without high spend     | Sonnet + Flash mix                      |
-
-You can also use friendly aliases: `opus`, `sonnet`, `gpt5`, `mix`, `cheap`, `speed`.
-
-Example:
-
-```bash
-oh-my-models use fast
-oh-my-models use claude
-```
-
-## How Config Discovery Works
-
-`oh-my-models` walks upward from your current working directory looking for:
-
-1. `.opencode/oh-my-openagent.jsonc` (preferred)
-2. `.opencode/oh-my-opencode.jsonc` (legacy, still fully supported)
-
-The first one it finds wins. This means it "just works" whether you're in a subdirectory of a big monorepo or at the project root.
-
-If nothing is found, most commands will automatically offer to create a sensible starter config for you.
-
-## Example Config Snippet
-
-After running `oh-my-models use mixed`, your config might look like:
+After running `oh-my-models use mixed`, your config will look something like:
 
 ```jsonc
 {
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json",
 
   "agents": {
-    "sisyphus": { "model": "anthropic/claude-opus-4-7" },
+    "sisyphus":   { "model": "anthropic/claude-opus-4-7" },
     "hephaestus": { "model": "anthropic/claude-sonnet-4-6" },
-    "oracle": { "model": "anthropic/claude-opus-4-7" },
-    "librarian": { "model": "google/gemini-3-flash" },
-    "explore": { "model": "github-copilot/grok-code-fast-1" }
+    "oracle":     { "model": "anthropic/claude-opus-4-7" },
+    "librarian":  { "model": "google/gemini-3-flash" },
+    "explore":    { "model": "github-copilot/grok-code-fast-1" }
     // ... other agents
   }
 }
 ```
 
-All comments and formatting you had before are preserved.
+All comments and formatting from your existing config are preserved.
+
+---
 
 ## Development
 
 ```bash
 bun install
-bun run build
+bun run build       # full production build
+bun run dev         # watch + rebuild the plugin on changes
+bun run dev:cli     # watch the CLI
 bun run typecheck
 bun run lint
+bun test
 ```
 
-### Development Commands
+When iterating on the plugin, run `bun run dev` in one terminal and restart OpenCode sessions to pick up changes.
 
-- `bun run dev` — Watch and rebuild the **plugin** on changes (recommended when testing inside OpenCode)
-- `bun run dev:plugin` — Same as above
-- `bun run dev:cli` — Watch the CLI entrypoint
-- `bun run build` — Full production build
-
-**For beta testers**, the easiest onboarding is:
-```bash
-./scripts/beta-setup.sh
-```
-
-### Testing the Plugin Inside OpenCode
-
-Since you have OpenCode installed locally, this is the best way to test the actual plugin behavior (tools + slash commands).
-
-1. **Start the plugin watcher** (recommended):
-   ```bash
-   bun run dev
-   ```
-   This will automatically rebuild `dist/index.js` whenever you change `src/index.ts`.
-
-2. **Point OpenCode at your local copy** by adding the absolute path in your config.
-
-   You can do this in either:
-   - Global config: `~/.config/opencode/opencode.jsonc`
-   - Or (recommended for testing) a project-level config: `.opencode/opencode.jsonc` inside a test project
-
-   Example:
-
-   ```jsonc
-   {
-     "plugin": [
-       "oh-my-openagent@latest",
-       "/Users/yourname/path/to/oh-my-models"   // ← local path
-     ]
-   }
-   ```
-
-3. Restart OpenCode (or at least start a new session).  
-   **Note:** Even with the watcher, OpenCode usually needs a session restart to reload the plugin code.
-
-4. Once loaded, you can test:
-
-   - Slash commands:
-     - `/agent-models`
-     - `/models-search fast`
-     - `/models-recommend sisyphus`
-
-   - Or just talk to the LLM naturally:
-     - "What models are my agents currently using?"
-     - "Show me some fast models that are available right now"
-     - "Recommend good models for the librarian agent"
-
-This setup lets you iterate quickly on the plugin tools while using the real OpenCode client (for `list_available_models`, etc.).
+---
 
 ## Philosophy
 
@@ -374,19 +244,21 @@ This setup lets you iterate quickly on the plugin tools while using the real Ope
 - **Respectful** — never destroys your comments or formatting
 - **Composable** — plays perfectly alongside oh-my-openagent and other plugins
 
+---
+
 ## Contributing
 
 We have one very important rule for contributions:
 
 **Every commit message must end with a Scooby-Doo quote.**
 
-This is our signature style.
+This is our signature style. See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guidelines and how to set up the commit template.
+---
 
 ## Support
 
-If you find `oh-my-models` useful in your daily workflow, consider supporting its development:
+If you find `oh-my-models` useful, consider supporting its development:
 
 <p align="center">
   <a href="https://buymeacoffee.com/notfixingit">
@@ -394,7 +266,7 @@ If you find `oh-my-models` useful in your daily workflow, consider supporting it
   </a>
 </p>
 
-Every coffee helps me ship more small, delightful tools like this one.
+---
 
 ## License
 
@@ -402,5 +274,5 @@ MIT © [notfixingit3](https://github.com/notfixingit3)
 
 ## Related Projects
 
-- [oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent) — The incredible multi-agent harness this plugin complements
+- [oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent) — The multi-agent harness this plugin complements
 - [OpenCode](https://opencode.ai) — The terminal AI coding agent everything runs on
