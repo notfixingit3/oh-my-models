@@ -17,9 +17,47 @@ import { loadConfig, getAllAgents, setAgentModel, writeConfig, applyPreset } fro
 import { PRESETS, getPreset, KNOWN_AGENTS } from './presets'
 
 export const OhMyModelsPlugin: Plugin = async ({ client }) => {
+  // Helper to fetch and normalize available models from OpenCode
+  async function fetchAvailableModels(search?: string, provider?: string) {
+    try {
+      const providersResponse = await client.config.providers()
+      const providers = providersResponse.providers ?? []
+
+      let allModels: Array<{ provider: string; id: string; name: string }> = []
+
+      for (const prov of providers) {
+        if (!prov.models) continue
+        for (const [modelId, modelInfo] of Object.entries(prov.models)) {
+          allModels.push({
+            provider: prov.id,
+            id: `${prov.id}/${modelId}`,
+            name: (modelInfo as any).name || modelId,
+          })
+        }
+      }
+
+      if (provider) {
+        const p = provider.toLowerCase()
+        allModels = allModels.filter(m => m.provider.toLowerCase().includes(p))
+      }
+
+      if (search) {
+        const s = search.toLowerCase()
+        allModels = allModels.filter(m =>
+          m.id.toLowerCase().includes(s) ||
+          m.name.toLowerCase().includes(s) ||
+          m.provider.toLowerCase().includes(s)
+        )
+      }
+
+      return allModels
+    } catch {
+      return []
+    }
+  }
+
   /**
    * Tool: List current agent model configuration
-   * This answers "what are all the agents configured to?"
    */
   const listAgentModels = tool({
     description: 'Show what model every agent is currently configured to use from the oh-my-openagent config. Use this first when the user wants to see their current agent setup.',
@@ -28,22 +66,20 @@ export const OhMyModelsPlugin: Plugin = async ({ client }) => {
       const found = findNearestConfig()
 
       if (!found) {
-        return 'No oh-my-openagent.jsonc (or legacy oh-my-opencode.jsonc) found in this project or its parents. The user should create one or run the CLI version.'
+        return 'No oh-my-openagent.jsonc (or legacy oh-my-opencode.jsonc) found in this project or its parents.'
       }
 
       const config = loadConfig(found)
       const agents = getAllAgents(config)
 
       if (Object.keys(agents).length === 0) {
-        return `Config found at ${found.path}, but no agent model overrides are defined yet. All agents are using oh-my-openagent defaults.`
+        return `Config found at ${found.path}, but no agent model overrides are defined yet.`
       }
 
       let output = `**Current Agent Models** (from ${found.path})\n\n`
-
       for (const [agent, model] of Object.entries(agents)) {
         output += `- **${agent}**: \`${model}\`\n`
       }
-
       return output
     },
   })
@@ -210,12 +246,126 @@ export const OhMyModelsPlugin: Plugin = async ({ client }) => {
     },
   })
 
+  /**
+   * Tool: Recommend the best models for a specific agent based on role + what is actually available.
+   * This addresses the user's desire for "top 4 recommended models" without copy-paste.
+   */
+  const recommendModelsForAgent = tool({
+    description: 'Recommend the top 4 best models for a specific agent (or general purpose), based on the agent\'s typical role and the models that are actually available in this session right now. This combines smart defaults with live availability.',
+    args: {
+      agent: tool.schema.string().describe('The agent name (sisyphus, hephaestus, librarian, explore, oracle, etc.)'),
+      focus: tool.schema.string().optional().describe('Optional focus: "reasoning", "speed", "cost", or "balanced"'),
+    },
+    async execute({ agent, focus }) {
+      const lowerAgent = agent.toLowerCase()
+      const focusLower = (focus || '').toLowerCase()
+
+      // Role-based preference scoring
+      const isHeavyThinker = ['sisyphus', 'oracle', 'prometheus'].includes(lowerAgent)
+      const isDeepWorker = ['hephaestus', 'atlas'].includes(lowerAgent)
+      const isResearch = ['librarian', 'explore', 'momus'].includes(lowerAgent)
+      const isFastNeeded = ['explore', 'sisyphus-junior'].includes(lowerAgent)
+
+      let preference = focusLower
+      if (!preference) {
+        if (isHeavyThinker) preference = 'reasoning'
+        else if (isDeepWorker) preference = 'balanced'
+        else if (isResearch || isFastNeeded) preference = 'speed'
+        else preference = 'balanced'
+      }
+
+      const available = await fetchAvailableModels()
+
+      if (available.length === 0) {
+        return 'No models are currently available from connected providers. Please make sure your providers are set up in OpenCode.'
+      }
+
+      // Simple scoring based on common knowledge + name matching
+      const scored = available.map(m => {
+        const id = m.id.toLowerCase()
+        const name = m.name.toLowerCase()
+        let score = 0
+
+        // Strong reasoning models
+        if (preference === 'reasoning') {
+          if (id.includes('opus') || id.includes('claude-4') || id.includes('gpt-5.5') || id.includes('gemini-3-pro')) score += 10
+          if (id.includes('sonnet')) score += 5
+        }
+
+        // Speed / cheap
+        if (preference === 'speed' || preference === 'cost') {
+          if (id.includes('flash') || id.includes('nano') || id.includes('fast') || id.includes('haiku')) score += 10
+          if (id.includes('gemini-3-flash') || id.includes('grok')) score += 6
+        }
+
+        // Balanced / coding
+        if (preference === 'balanced') {
+          if (id.includes('sonnet') || id.includes('gpt-5') || id.includes('gemini-3-pro')) score += 8
+        }
+
+        // General quality bonuses
+        if (id.includes('claude') || id.includes('gpt-5') || id.includes('gemini-3')) score += 3
+        if (id.includes('opus') || id.includes('pro')) score += 2
+
+        // Penalize very old/small models unless speed is requested
+        if (preference !== 'speed' && (id.includes('haiku') || id.includes('nano') || id.includes('3b') || id.includes('8b'))) {
+          score -= 4
+        }
+
+        return { ...m, score }
+      })
+
+      const top = scored
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 4)
+
+      let output = `**Top model recommendations for ${agent}** (focus: ${preference})\n\n`
+
+      top.forEach((m, i) => {
+        output += `${i + 1}. \`${m.id}\`\n`
+        output += `   ${m.name}\n\n`
+      })
+
+      output += 'Would you like me to set one of these for the agent using `set_agent_model`?'
+
+      return output
+    },
+  })
+
+  // Register slash commands for direct user invocation inside OpenCode
+  async function registerCommands(config: any) {
+    config.command = config.command ?? {}
+
+    // /agent-models → show current config + recommendations
+    config.command['agent-models'] = {
+      description: 'Show current agent model configuration and smart recommendations',
+      template: 'Use the list_agent_models tool to show the current agent models. Then use recommend_models_for_agent for the most important agents (sisyphus, hephaestus, etc.) to suggest good options from what is available.',
+    }
+
+    // /models-search → search available models
+    config.command['models-search'] = {
+      description: 'Search for available models (equivalent to /models with a query)',
+      template: 'The user wants to search for models. Ask them what they are looking for (fast, reasoning, cheap, specific provider, etc.), then call the list_available_models tool with an appropriate search term.',
+    }
+
+    // /models-recommend → quick recommendations
+    config.command['models-recommend'] = {
+      description: 'Get top 4 model recommendations for a specific agent',
+      template: 'Ask which agent they want recommendations for (or default to sisyphus), then call the recommend_models_for_agent tool.',
+    }
+  }
+
   return {
     tool: {
       list_agent_models: listAgentModels,
       list_available_models: listAvailableModels,
       set_agent_model: setAgentModelTool,
       apply_model_preset: applyModelPreset,
+      recommend_models_for_agent: recommendModelsForAgent,
+    },
+
+    async config(config) {
+      await registerCommands(config)
     },
   }
 }

@@ -80,14 +80,15 @@ We still recommend listing it if you use oh-my-openagent, mainly for:
 
 ## CLI vs Plugin Integration
 
-| Aspect                        | CLI (`bunx oh-my-models`)             | Registered as Plugin                                      |
-|-------------------------------|---------------------------------------|-----------------------------------------------------------|
-| **How you use it**            | Run commands in terminal              | Talk to the LLM ("show me the current agent models")      |
-| **Works inside OpenCode**     | Yes                                   | Yes                                                       |
-| **See agent models**          | `list` / `status`                     | `list_agent_models` tool                                  |
-| **Discover available models** | Manual                                | `list_available_models` tool (with search) — like `/models` |
-| **Set models**                | `set` / `set-all` / `use <preset>`    | `set_agent_model` + `apply_model_preset` tools            |
-| **Best for**                  | Direct control from terminal          | Natural language control while chatting                   |
+| Aspect                        | CLI (`bunx oh-my-models`)             | Registered as Plugin                                           |
+|-------------------------------|---------------------------------------|----------------------------------------------------------------|
+| **How you use it**            | Run commands in terminal              | Slash commands or talk to the LLM                              |
+| **Works inside OpenCode**     | Yes                                   | Yes                                                            |
+| **See agent models**          | `list` / `status`                     | `/agent-models` or `list_agent_models` tool                    |
+| **Discover models**           | Manual                                | `/models-search fast` or `list_available_models` (like `/models`) |
+| **Get smart recommendations** | Not available                         | `/models-recommend sisyphus` or `recommend_models_for_agent`   |
+| **Set models**                | `set` / `set-all` / `use <preset>`    | `set_agent_model` + `apply_model_preset` + natural language    |
+| **Best for**                  | Direct control from terminal          | In-flow model management while working                         |
 
 **Bottom line:** 
 - Use the **CLI** when you want direct terminal control.
@@ -107,12 +108,21 @@ Once you add `oh-my-models` to your `opencode.json` plugins, you get powerful mo
 
 The plugin exposes these tools to the LLM:
 
-| Tool                    | Purpose                                              |
-|-------------------------|------------------------------------------------------|
-| `list_agent_models`     | See current agent → model configuration              |
-| `list_available_models` | Search/discover models from your connected providers (this is the in-session equivalent of `/models`) |
-| `set_agent_model`       | Change the model for one specific agent              |
-| `apply_model_preset`    | Apply claude / mixed / fast / balanced etc. in one go |
+| Tool                         | Purpose                                                              |
+|------------------------------|----------------------------------------------------------------------|
+| `list_agent_models`          | See current agent → model configuration                              |
+| `list_available_models`      | Search/discover models from connected providers (like `/models`)     |
+| `set_agent_model`            | Change the model for one specific agent                              |
+| `apply_model_preset`         | Apply claude / mixed / fast / balanced etc. in one go                |
+| `recommend_models_for_agent` | Get the top 4 recommended models for an agent based on role + live availability |
+
+### Slash Commands
+
+You can also use these convenient slash commands directly:
+
+- `/agent-models` — Show current agent configuration + smart recommendations
+- `/models-search <query>` — Search available models (e.g. `/models-search fast` or `/models-search opus`)
+- `/models-recommend [agent]` — Get top 4 recommendations for an agent (defaults to sisyphus if not specified)
 
 This is significantly more powerful than the CLI when you're deep in a session, because the LLM can help you choose good models based on the actual providers you have connected.
 
