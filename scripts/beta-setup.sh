@@ -2,12 +2,12 @@
 #
 # oh-my-models Beta Tester Setup Script
 #
-# Makes it easy (and safe) for normal humans and sysadmins to test
-# oh-my-models locally without it being published to npm.
+# Handles both first-time setup and upgrading an existing install.
 #
 # Usage:
-#   ./scripts/beta-setup.sh                  # Interactive (idiot-proof)
-#   ./scripts/beta-setup.sh --yes            # Non-interactive, project-level (default)
+#   ./scripts/beta-setup.sh                  # Interactive first-time setup
+#   ./scripts/beta-setup.sh --upgrade        # Pull latest + rebuild (no config changes)
+#   ./scripts/beta-setup.sh --yes            # Non-interactive, project-level
 #   ./scripts/beta-setup.sh --global --yes   # Non-interactive, global
 #   ./scripts/beta-setup.sh --help
 #
@@ -41,6 +41,7 @@ PLUGIN_ENTRY="$REPO_PATH/dist/index.js"
 MODE="${OH_MY_MODELS_MODE:-}"           # project | global | ""
 YES="${OH_MY_MODELS_YES:-0}"
 DRY_RUN=0
+UPGRADE=0
 CUSTOM_CONFIG="${OH_MY_MODELS_CONFIG:-}"
 
 # ----------------------------- Helpers ----------------------------
@@ -56,9 +57,9 @@ die() {
     exit 1
 }
 
-info()  { echo "${BLUE}→${RESET} $*"; }
+info()    { echo "${BLUE}→${RESET} $*"; }
 success() { echo "${GREEN}✅${RESET} $*"; }
-warn()  { echo "${YELLOW}⚠️${RESET}  $*"; }
+warn()    { echo "${YELLOW}⚠️${RESET}  $*"; }
 
 confirm() {
     local prompt="$1"
@@ -85,10 +86,11 @@ usage() {
 Usage: $0 [options]
 
 Options:
+  --upgrade            Pull latest changes and rebuild (no config changes)
   -y, --yes            Non-interactive mode (auto-accept defaults)
   --global             Register in global OpenCode config
   --project            Register only for this project (default)
-  --path <path>        Custom path to oh-my-models (default: script location)
+  --path <path>        Custom path to oh-my-models repo (default: script location)
   --config <file>      Custom path to opencode.jsonc
   --dry-run            Show what would be done without making changes
   -h, --help           Show this help
@@ -100,20 +102,24 @@ Environment variables (useful for automation):
   OH_MY_MODELS_YES=1
 
 Examples:
+  # First-time setup (interactive)
+  ./scripts/beta-setup.sh
+
+  # Upgrade an existing install
+  ./scripts/beta-setup.sh --upgrade
+
   # Fully automatic project-level setup
   ./scripts/beta-setup.sh --yes
 
   # Global setup for all projects (non-interactive)
   ./scripts/beta-setup.sh --yes --global
-
-  # Sysadmin / CI style
-  OH_MY_MODELS_YES=1 OH_MY_MODELS_MODE=global ./scripts/beta-setup.sh
 EOF
 }
 
 # ----------------------------- Argument Parsing -----------------
 while [[ $# -gt 0 ]]; do
     case "$1" in
+        --upgrade)         UPGRADE=1; shift ;;
         -y|--yes)          YES=1; shift ;;
         --global)          MODE="global"; shift ;;
         --project)         MODE="project"; shift ;;
@@ -136,6 +142,39 @@ fi
 
 if ! command -v bun >/dev/null 2>&1; then
     die "Bun is not installed. Install it from https://bun.sh"
+fi
+
+# ----------------------------- Upgrade Mode ---------------------
+if [[ "$UPGRADE" == "1" ]]; then
+    print_header
+
+    if ! command -v git >/dev/null 2>&1; then
+        die "git is not installed."
+    fi
+
+    info "Pulling latest changes..."
+    cd "$REPO_PATH"
+    git pull
+
+    info "Installing dependencies..."
+    bun install
+
+    info "Building..."
+    bun run build
+
+    if [[ ! -f "$PLUGIN_ENTRY" ]]; then
+        die "Build succeeded but expected output not found: $PLUGIN_ENTRY"
+    fi
+
+    echo ""
+    echo "========================================"
+    success "Upgrade complete!"
+    echo ""
+    echo "${BOLD}One more step:${RESET} Fully quit and restart OpenCode to load the new build."
+    echo ""
+    echo "Zoinks!"
+    echo ""
+    exit 0
 fi
 
 # ----------------------------- Build Step -----------------------
@@ -317,16 +356,14 @@ success "Setup complete!"
 echo ""
 echo "${BOLD}Next steps:${RESET}"
 echo ""
-echo "  1. In another terminal, run this while testing:"
-echo "     ${BOLD}bun run dev${RESET}"
+echo "  1. Fully quit and restart OpenCode."
 echo ""
-echo "  2. Fully quit and restart OpenCode"
-echo "     (or open a new session in the oh-my-models folder)"
-echo ""
-echo "  3. Try these commands inside OpenCode:"
+echo "  2. Try these commands inside OpenCode:"
 echo "     /agent-models"
-echo "     /models-recommend sisyphus"
 echo "     /models-search fast"
+echo ""
+echo "${BOLD}To upgrade later:${RESET}"
+echo "  cd $REPO_PATH && git pull && ./scripts/beta-setup.sh --upgrade"
 echo ""
 echo "Report issues: https://github.com/notfixingit3/oh-my-models/issues"
 echo ""

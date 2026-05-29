@@ -187,10 +187,10 @@ The script builds the project, asks whether you want a project-level or global i
 ### Keeping Up to Date
 
 ```bash
-git pull && bun run build
+./scripts/beta-setup.sh --upgrade
 ```
 
-Then restart OpenCode to pick up the new build.
+This pulls the latest, reinstalls dependencies if needed, rebuilds, and tells you what to do next. Then restart OpenCode to pick up the new build.
 
 ---
 
