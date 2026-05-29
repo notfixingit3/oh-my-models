@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/notfixingit3/oh-my-models">
-    <img src="assets/logo.svg" width="118" height="118" alt="oh-my-models logo">
+    <img src="assets/logo.png" width="140" alt="oh-my-models logo">
   </a>
 </p>
 
