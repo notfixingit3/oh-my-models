@@ -11,6 +11,8 @@
   View and bulk-set LLM models for all agents with one command.
 </p>
 
+> **Status:** This project is currently in **private beta**. It is not yet published to npm. See the [Beta Testing](#beta-testing) section below for how to try it.
+
 <p align="center">
   <a href="https://www.npmjs.com/package/oh-my-models"><img src="https://img.shields.io/npm/v/oh-my-models?style=flat-square&color=6366f1" alt="npm version"></a>
   <a href="https://github.com/notfixingit3/oh-my-models/blob/main/LICENSE"><img src="https://img.shields.io/github/license/notfixingit3/oh-my-models?style=flat-square&logo=github" alt="License: MIT"></a>
@@ -41,25 +43,25 @@ oh-my-models set sisyphus anthropic/claude-opus-4-7
 
 ## Installation & Usage
 
-### Primary Way: Use the CLI
+> **Note:** `oh-my-models` is currently in private beta and **not yet published to npm**. Use the beta testing instructions below.
 
-`oh-my-models` is first and foremost a **command-line tool**. This is the recommended and most useful way to use it today.
+### For Beta Testers (Recommended Right Now)
 
-```bash
-# No install required
-bunx oh-my-models list
-bunx oh-my-models use mixed
-bunx oh-my-models set sisyphus anthropic/claude-opus-4-7
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/notfixingit3/oh-my-models.git
+   cd oh-my-models
+   bun install
+   bun run build
+   ```
 
-# Or install it globally
-bun install -g oh-my-models
-```
+2. Load it locally in your `opencode.jsonc` using a `file://` path (see the [Beta Testing](#beta-testing) section below for exact examples).
 
-You can run these commands from a regular terminal — whether OpenCode is running or not.
+Once we publish to npm, the normal `bunx` / global install flow will become the primary method.
 
-### Optional: Register as an OpenCode Plugin
+### Optional: Register as an OpenCode Plugin (Public Release)
 
-You can also add it to your `opencode.json` (or `opencode.jsonc`):
+After we publish, you will be able to add it like this:
 
 ```json
 {
@@ -70,7 +72,7 @@ You can also add it to your `opencode.json` (or `opencode.jsonc`):
 }
 ```
 
-**For local development / testing**, use an absolute path instead of the package name (see the [Development](#development) section for details).
+**During beta**, always use an absolute `file://` path instead (see below).
 
 **Current state (as of latest version):**
 
@@ -126,6 +128,49 @@ oh-my-models select
 This launches a guided, keyboard-friendly flow (powered by `@clack/prompts`) for choosing an agent and selecting a model.
 
 Additionally, running `oh-my-models set` with no arguments now automatically launches the same interactive picker. This gives you a smooth experience whether you type the full command or just start with `set`.
+
+## Beta Testing (Current Status)
+
+Since `oh-my-models` is not yet published to npm, here is the recommended way for you and your friends to test it:
+
+### Quick Start for Testers
+
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/notfixingit3/oh-my-models.git
+   cd oh-my-models
+   bun install
+   bun run build
+   ```
+
+2. Add the local path to your `opencode.jsonc` (global or project-level):
+
+   ```jsonc
+   {
+     "plugin": [
+       "oh-my-openagent@latest",
+       "file:///absolute/path/to/the/cloned/oh-my-models"
+     ]
+   }
+   ```
+
+   **Example on macOS:**
+   ```jsonc
+   "file:///Users/yourname/Documents/gitlab/oh-my-models"
+   ```
+
+3. Restart OpenCode (or start a new session).
+
+4. Try the commands:
+   - `/agent-models`
+   - `/models-search fast`
+   - `/models-recommend sisyphus`
+
+You can keep it updated by running `git pull && bun run build` in the cloned folder.
+
+### Keeping Your Global Config Clean
+
+For testing, many people prefer creating a project-level `.opencode/opencode.jsonc` inside a folder instead of modifying their global config.
 
 ## Using Inside OpenCode (Recommended)
 
